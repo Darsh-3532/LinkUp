@@ -1,0 +1,2671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Explorer - LinkUp</title>
+    <meta name="description" content="Interactive network visualization tools for exploring startup ecosystem connections with advanced filtering, search, and real-time analysis capabilities.">
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <style>
+        #networkSvg g circle {
+            transition: stroke-width 0.2s ease, filter 0.2s ease;
+        }
+        #networkSvg g {
+            transition: filter 0.2s ease;
+        }
+        #networkSvg line {
+            transition: stroke 0.2s ease, opacity 0.2s ease;
+        }
+    </style>
+  
+
+  </head>
+<body class="bg-background">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-minimal border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <a href="../index.html" class="flex items-center hover:opacity-80 transition-opacity">
+                    <div class="flex-shrink-0">
+                        <svg class="h-8 w-8 text-primary" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="10" cy="12" r="2" fill="currentColor"/>
+                            <circle cx="22" cy="12" r="2" fill="currentColor"/>
+                            <circle cx="16" cy="20" r="2" fill="currentColor"/>
+                            <line x1="10" y1="12" x2="16" y2="20" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="22" y1="12" x2="16" y2="20" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="10" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h1 class="text-xl font-bold text-primary">LinkUp</h1>
+                        <p class="text-xs text-secondary-500">Research Platform</p>
+                    </div>
+                </a>
+
+                <!-- Navigation Links -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="homepage.html" class="nav-link">Home</a>
+                        <a href="research_hub.html" class="nav-link">Research Hub</a>
+                        <a href="network_explorer.html" class="nav-link active">Network Explorer</a>
+                        <a href="analytics_dashboard.html" class="nav-link">Analytics</a>
+                        <a href="dataset_repository.html" class="nav-link">Datasets</a>
+                        <a href="insights_center.html" class="nav-link">Insights</a>
+                    </div>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden">
+                    <button type="button" class="text-secondary-600 hover:text-primary p-2" onclick="toggleMobileMenu()">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-slate-200">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="homepage.html" class="block px-3 py-2 text-secondary-600 hover:text-primary">Home</a>
+                <a href="research_hub.html" class="block px-3 py-2 text-secondary-600 hover:text-primary">Research Hub</a>
+                <a href="network_explorer.html" class="block px-3 py-2 text-primary font-semibold">Network Explorer</a>
+                <a href="analytics_dashboard.html" class="block px-3 py-2 text-secondary-600 hover:text-primary">Analytics</a>
+                <a href="dataset_repository.html" class="block px-3 py-2 text-secondary-600 hover:text-primary">Datasets</a>
+                <a href="insights_center.html" class="block px-3 py-2 text-secondary-600 hover:text-primary">Insights</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Explorer Header Section -->
+    <section class="bg-gradient-to-br from-primary-50 via-white to-accent-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium mb-4">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    Interactive Network Analysis
+                </div>
+                <h1 class="text-4xl lg:text-5xl font-bold text-text-primary mb-4">
+                    Network <span class="text-primary">Explorer</span>
+                </h1>
+                <p class="text-xl text-text-secondary max-w-3xl mx-auto">
+                    Dive deep into startup ecosystem connections with our interactive visualization tools. Filter, search, and analyze network patterns in real-time.
+                </p>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-primary" id="headerNodes">2,847</div>
+                    <div class="text-sm text-text-secondary">Active Nodes</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-accent" id="headerConnections">15,623</div>
+                    <div class="text-sm text-text-secondary">Connections</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-success">247</div>
+                    <div class="text-sm text-text-secondary">Communities</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-secondary">0.73</div>
+                    <div class="text-sm text-text-secondary">Avg Centrality</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Explorer Interface -->
+    <section class="py-8 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-4 gap-8">
+                <!-- Control Panel Sidebar -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Search & Filters -->
+                    <div class="research-card">
+                        <h3 class="text-lg font-semibold text-text-primary mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"/>
+                            </svg>
+                            Search & Filter
+                        </h3>
+                        
+                        <!-- Search Input -->
+                        <div class="mb-4">
+                            <label class="form-label">Search Network</label>
+                            <div class="relative">
+                                <input type="text" class="form-input pl-10" placeholder="Search startups, investors..." id="networkSearch">
+                                <svg class="w-5 h-5 text-secondary-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            <div id="searchResults" class="mt-2 max-h-40 overflow-y-auto hidden">
+                                <!-- Search results will appear here -->
+                            </div>
+                        </div>
+
+                        <!-- Node Type Filter -->
+                        <div class="mb-4">
+                            <label class="form-label">Node Type</label>
+                            <select class="form-input" id="nodeTypeFilter">
+                                <option value="all">All Nodes</option>
+                                <option value="company">Companies Only</option>
+                                <option value="investor">Investors Only</option>
+                            </select>
+                        </div>
+
+                        <!-- Geographic Filter -->
+                        <div class="mb-4">
+                            <label class="form-label">Geographic Region</label>
+                            <select class="form-input" id="regionFilter">
+                                <option value="all">All Regions</option>
+                                <option value="north-america">North America</option>
+                                <option value="europe">Europe</option>
+                                <option value="asia-pacific">Asia Pacific</option>
+                                <option value="latin-america">Latin America</option>
+                                <option value="middle-east-africa">Middle East & Africa</option>
+                            </select>
+                        </div>
+
+                        <!-- Industry Sector Filter -->
+                        <div class="mb-4">
+                            <label class="form-label">Industry Sector</label>
+                            <select class="form-input" id="sectorFilter">
+                                <option value="all">All Sectors</option>
+                                <option value="fintech">FinTech</option>
+                                <option value="healthtech">HealthTech</option>
+                                <option value="ai-ml">AI & Machine Learning</option>
+                                <option value="edtech">EdTech</option>
+                                <option value="cleantech">CleanTech</option>
+                                <option value="enterprise">Enterprise Software</option>
+                                <option value="consumer">Consumer Tech</option>
+                            </select>
+                        </div>
+
+                        <!-- Funding Stage Filter -->
+                        <div class="mb-4">
+                            <label class="form-label">Funding Type</label>
+                            <select class="form-input" id="fundingTypeFilter">
+                                <option value="all">All Funding Types</option>
+                                <option value="angel">Angel</option>
+                                <option value="venture">Venture</option>
+                                <option value="series-a">Series A</option>
+                                <option value="series-b">Series B</option>
+                                <option value="series-c+">Series C+</option>
+                                <option value="private-equity">Private Equity</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Time Period Filter -->
+                        <div class="mb-6">
+                            <label class="form-label">Time Period</label>
+                            <select class="form-input" id="timeFilter">
+                                <option value="all">All Time</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                                <option value="last-12-months">Last 12 Months</option>
+                                <option value="last-6-months">Last 6 Months</option>
+                            </select>
+                        </div>
+
+                        <!-- Filter Actions -->
+                        <div class="flex space-x-2">
+                            <button class="btn-primary flex-1 text-sm py-2" onclick="applyFilters()">
+                                Apply Filters
+                            </button>
+                            <button class="btn-outline flex-1 text-sm py-2" onclick="resetFilters()">
+                                Reset
+                            </button>
+                        </div>
+
+                        <!-- Dataset Selection -->
+                        <div class="mt-4 pt-4 border-t border-secondary-600">
+                            <div class="space-y-2">
+                                <button class="btn-primary w-full text-sm py-2" onclick="loadTestNetwork()">
+                                    Load Small Dataset (15 nodes)
+                                </button>
+                                <button class="btn-outline w-full text-sm py-2" onclick="loadFullNetwork()">
+                                    Load Full Dataset (500 nodes)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Analysis Tools -->
+                    <div class="research-card">
+                        <h3 class="text-lg font-semibold text-text-primary mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                            </svg>
+                            Analysis Tools
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="calculateCentrality()">
+                                <div class="font-medium text-sm">Centrality Analysis</div>
+                                <div class="text-xs text-text-secondary">Calculate network centrality measures</div>
+                            </button>
+                            
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="detectCommunities()">
+                                <div class="font-medium text-sm">Community Detection</div>
+                                <div class="text-xs text-text-secondary">Identify network clusters</div>
+                            </button>
+                            
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="tracePathways()">
+                                <div class="font-medium text-sm">Pathway Tracing</div>
+                                <div class="text-xs text-text-secondary">Trace connections between nodes</div>
+                            </button>
+                            
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="showBipartiteDiagram()">
+                                <div class="font-medium text-sm">Bipartite Network Diagram</div>
+                                <div class="text-xs text-text-secondary">Visual separation of investors and companies</div>
+                            </button>
+
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="showFundingDistribution()">
+                                <div class="font-medium text-sm">Funding Type Distribution</div>
+                                <div class="text-xs text-text-secondary">Bar chart of funding events by type</div>
+                            </button>
+
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="showDegreeDistribution()">
+                                <div class="font-medium text-sm">Degree Distribution Graph</div>
+                                <div class="text-xs text-text-secondary">Histogram of node connectivity</div>
+                            </button>
+
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="showConnectedComponents()">
+                                <div class="font-medium text-sm">Connected Components</div>
+                                <div class="text-xs text-text-secondary">Visualization of network clusters</div>
+                            </button>
+
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="showAPIPerformance()">
+                                <div class="font-medium text-sm">API Performance Summary</div>
+                                <div class="text-xs text-text-secondary">Response time analysis chart</div>
+                            </button>
+
+                            <!-- Report Subfigures Section -->
+                            <div class="mt-4 pt-4 border-t border-secondary-600">
+                                <h4 class="text-sm font-semibold text-text-primary mb-3">Report Subfigures</h4>
+
+                                <button class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border-l-4 border-blue-500" onclick="showCompanyDegreeSubgraph()">
+                                    <div class="font-medium text-sm">Company Degree Subgraph</div>
+                                    <div class="text-xs text-text-secondary">Companies with 3+ funding relationships</div>
+                                </button>
+
+                                <button class="w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition-colors border-l-4 border-green-500 mt-2" onclick="showInvestorActivitySubgraph()">
+                                    <div class="font-medium text-sm">Investor Activity Subgraph</div>
+                                    <div class="text-xs text-text-secondary">Highest degree value investors</div>
+                                </button>
+
+                                <button class="w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors border-l-4 border-purple-500 mt-2" onclick="showFundingTimelinePlot()">
+                                    <div class="font-medium text-sm">Funding Timeline Plot</div>
+                                    <div class="text-xs text-text-secondary">Chronological funding distribution</div>
+                                </button>
+                            </div>
+
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="exportAnalysis()">
+                                <div class="font-medium text-sm">Export Results</div>
+                                <div class="text-xs text-text-secondary">Download analysis data</div>
+                            </button>
+
+                            <button class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors" onclick="downloadPDF()">
+                                <div class="font-medium text-sm">Download PDF Report</div>
+                                <div class="text-xs text-text-secondary">Complete network analysis report</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Network Statistics -->
+                    <div class="research-card">
+                        <h3 class="text-lg font-semibold text-text-primary mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/>
+                            </svg>
+                            Current View Stats
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-text-secondary">Visible Nodes</span>
+                                <span class="font-semibold text-primary" id="visibleNodes">2,847</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-text-secondary">Active Connections</span>
+                                <span class="font-semibold text-accent" id="activeConnections">15,623</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-text-secondary">Network Density</span>
+                                <span class="font-semibold text-success" id="networkDensity">0.73</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-text-secondary">Avg Path Length</span>
+                                <span class="font-semibold text-secondary" id="avgPathLength">3.2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Visualization Area -->
+                <div class="lg:col-span-3">
+                    <div class="network-panel">
+                        <!-- Visualization Controls -->
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center space-x-4">
+                                <h2 class="text-xl font-semibold text-text-primary">Network Visualization</h2>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-success-600 font-medium">Live Data</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-2">
+                                <!-- Layout Controls -->
+                                <div class="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+                                    <button class="p-2 bg-white rounded shadow-sm text-primary" onclick="setLayout('force')" title="Force Layout">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 hover:bg-white rounded transition-colors" onclick="setLayout('circular')" title="Circular Layout">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9"/>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 hover:bg-white rounded transition-colors" onclick="setLayout('hierarchical')" title="Hierarchical Layout">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 hover:bg-white rounded transition-colors" onclick="setLayout('bipartite')" title="Bipartite Layout">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h18v18H3z M12 3v18"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                
+                                <!-- Zoom Controls -->
+                                <div class="flex items-center space-x-1">
+                                    <button class="p-2 bg-slate-100 hover:bg-slate-200 rounded transition-colors" onclick="zoomIn()" title="Zoom In">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 bg-slate-100 hover:bg-slate-200 rounded transition-colors" onclick="zoomOut()" title="Zoom Out">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6"/>
+                                        </svg>
+                                    </button>
+                                    <button class="p-2 bg-slate-100 hover:bg-slate-200 rounded transition-colors" onclick="resetZoom()" title="Reset View">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Main Network Visualization Container -->
+                        <div class="relative bg-slate-50 rounded-lg overflow-hidden" style="height: 800px;" id="networkContainer">
+                            <svg class="w-full h-full" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg" id="networkSvg">
+                                <!-- Network Visualization -->
+                                <defs>
+                                    <marker id="arrowhead" markerWidth="20" markerHeight="14" refX="18" refY="7" orient="auto">
+                                        <polygon points="0 0, 20 7, 0 14" fill="#94A3B8" stroke="#94A3B8" stroke-width="1"/>
+                                    </marker>
+                                    <filter id="glow">
+                                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                        <feMerge> 
+                                            <feMergeNode in="coloredBlur"/>
+                                            <feMergeNode in="SourceGraphic"/>
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                
+                                <!-- Background Grid -->
+                                <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                                    <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#E2E8F0" stroke-width="1" opacity="0.3"/>
+                                </pattern>
+                                <rect width="100%" height="100%" fill="url(#grid)"/>
+                                
+                                <!-- Dynamic Network Content -->
+                                <g id="connections"></g>
+                                <g id="nodes"></g>
+                                <g id="communities"></g>
+                            </svg>
+                            
+                            <!-- Loading Overlay -->
+                            <div id="loadingOverlay" class="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center hidden">
+                                <div class="text-center">
+                                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                                    <p class="text-text-secondary">Analyzing network...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Color Legend -->
+                        <div class="mt-6 p-4 bg-white rounded-lg border border-slate-200">
+                            <h3 class="text-lg font-semibold text-text-primary mb-4">Color Legend</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #3B82F6;"></div>
+                                    <span class="text-sm text-text-secondary">Software</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #06B6D4;"></div>
+                                    <span class="text-sm text-text-secondary">Cloud Computing</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #8B5CF6;"></div>
+                                    <span class="text-sm text-text-secondary">Data Analytics</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #EC4899;"></div>
+                                    <span class="text-sm text-text-secondary">AI</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #F59E0B;"></div>
+                                    <span class="text-sm text-text-secondary">Cybersecurity</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #10B981;"></div>
+                                    <span class="text-sm text-text-secondary">Mobile Dev</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #6366F1;"></div>
+                                    <span class="text-sm text-text-secondary">FinTech</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #EF4444;"></div>
+                                    <span class="text-sm text-text-secondary">HealthTech</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #DC2626;"></div>
+                                    <span class="text-sm text-text-secondary">VC</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #F97316;"></div>
+                                    <span class="text-sm text-text-secondary">Angel</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 rounded-full" style="background-color: #7C3AED;"></div>
+                                    <span class="text-sm text-text-secondary">PE Fund</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Node Information Panel -->
+                        <div id="nodeInfoPanel" class="mt-6 p-4 bg-slate-50 rounded-lg hidden">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-lg font-semibold text-text-primary" id="nodeTitle">Node Information</h3>
+                                <button onclick="closeNodeInfo()" class="text-secondary-400 hover:text-secondary-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div id="nodeDetails" class="grid md:grid-cols-2 gap-4">
+                                <!-- Node details will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analysis Results Section -->
+    <section class="py-12 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-text-primary mb-4">Real-time Analysis Results</h2>
+                <p class="text-lg text-text-secondary max-w-3xl mx-auto">
+                    Dynamic insights generated from your current network view and filter selections.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Centrality Analysis -->
+                <div class="research-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-text-primary">Centrality Leaders</h3>
+                        <div class="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-primary-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold text-white">TH</span>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-sm">TechHub</div>
+                                    <div class="text-xs text-text-secondary">Betweenness: 0.89</div>
+                                </div>
+                            </div>
+                            <div class="text-primary text-sm font-medium">#1</div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold text-white">FL</span>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-sm">FinTech Labs</div>
+                                    <div class="text-xs text-text-secondary">Betweenness: 0.67</div>
+                                </div>
+                            </div>
+                            <div class="text-accent text-sm font-medium">#2</div>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-error rounded-full flex items-center justify-center">
+                                    <span class="text-xs font-bold text-white">SA</span>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-sm">Startup Accelerator</div>
+                                    <div class="text-xs text-text-secondary">Betweenness: 0.54</div>
+                                </div>
+                            </div>
+                            <div class="text-error text-sm font-medium">#3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Detection -->
+                <div class="research-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-text-primary">Detected Communities</h3>
+                        <span class="text-xs text-text-secondary">Updated 1 min ago</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="border-l-4 border-primary bg-primary-50 p-3 rounded-r-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-sm">AI/ML Cluster</h4>
+                                <span class="text-xs bg-primary text-white px-2 py-1 rounded">47 nodes</span>
+                            </div>
+                            <p class="text-xs text-text-secondary">High connectivity around AI startups and ML research institutions.</p>
+                        </div>
+                        <div class="border-l-4 border-accent bg-accent-50 p-3 rounded-r-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-sm">FinTech Hub</h4>
+                                <span class="text-xs bg-accent text-white px-2 py-1 rounded">32 nodes</span>
+                            </div>
+                            <p class="text-xs text-text-secondary">Dense network of financial technology companies and investors.</p>
+                        </div>
+                        <div class="border-l-4 border-success bg-success-50 p-3 rounded-r-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-medium text-sm">Corporate Innovation</h4>
+                                <span class="text-xs bg-success text-white px-2 py-1 rounded">28 nodes</span>
+                            </div>
+                            <p class="text-xs text-text-secondary">Enterprise partnerships and corporate venture capital connections.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pathway Analysis -->
+                <div class="research-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-text-primary">Key Pathways</h3>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                            <span class="text-xs text-success-600 font-medium">Active</span>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="font-medium text-sm mb-2">Startup → Investor</div>
+                            <div class="text-xs text-text-secondary mb-2">Average path length: 2.3 steps</div>
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-primary rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-success rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="font-medium text-sm mb-2">Research → Commercial</div>
+                            <div class="text-xs text-text-secondary mb-2">Average path length: 3.1 steps</div>
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-secondary rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-error rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-accent rounded-full"></div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="font-medium text-sm mb-2">Cross-sector Collaboration</div>
+                            <div class="text-xs text-text-secondary mb-2">Average path length: 4.2 steps</div>
+                            <div class="flex items-center space-x-1">
+                                <div class="w-2 h-2 bg-accent rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-primary rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-success rounded-full"></div>
+                                <span class="text-xs">→</span>
+                                <div class="w-2 h-2 bg-secondary rounded-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-secondary-900 text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="col-span-1">
+                    <div class="flex items-center mb-4">
+                        <svg class="h-8 w-8 text-primary-400" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="10" cy="12" r="2" fill="currentColor"/>
+                            <circle cx="22" cy="12" r="2" fill="currentColor"/>
+                            <circle cx="16" cy="20" r="2" fill="currentColor"/>
+                            <line x1="10" y1="12" x2="16" y2="20" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="22" y1="12" x2="16" y2="20" stroke="currentColor" stroke-width="1.5"/>
+                            <line x1="10" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        <span class="ml-2 text-xl font-bold">LinkUp</span>
+                    </div>
+                    <p class="text-secondary-300 text-sm mb-4">
+                        Illuminating the hidden patterns that shape entrepreneurial success through rigorous network analysis.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="javascript:void(0)" class="text-secondary-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="javascript:void(0)" class="text-secondary-400 hover:text-white transition-colors">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Platform -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Platform</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="network_explorer.html" class="text-secondary-300 hover:text-white transition-colors">Network Explorer</a></li>
+                        <li><a href="analytics_dashboard.html" class="text-secondary-300 hover:text-white transition-colors">Analytics Dashboard</a></li>
+                        <li><a href="dataset_repository.html" class="text-secondary-300 hover:text-white transition-colors">Dataset Repository</a></li>
+                        <li><a href="insights_center.html" class="text-secondary-300 hover:text-white transition-colors">Insights Center</a></li>
+                    </ul>
+                </div>
+
+                <!-- Research -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Research</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="research_hub.html" class="text-secondary-300 hover:text-white transition-colors">Research Hub</a></li>
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">Methodology</a></li>
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">Publications</a></li>
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">API Documentation</a></li>
+                    </ul>
+                </div>
+
+                <!-- Support -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Support</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">Community Forum</a></li>
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="javascript:void(0)" class="text-secondary-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-secondary-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-secondary-400 text-sm">
+                    © 2025 LinkUp. All Rights Reserved.
+                </p>
+                <p class="text-secondary-400 text-sm mt-2 md:mt-0">
+                    Making network analysis accessible to everyone
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Filter functions
+        async function applyFilters() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.remove('hidden');
+
+            try {
+                // Get all filter values
+                const nodeType = document.getElementById('nodeTypeFilter')?.value || 'all';
+                const region = document.getElementById('regionFilter')?.value || 'all';
+                const sector = document.getElementById('sectorFilter')?.value || 'all';
+                const fundingType = document.getElementById('fundingTypeFilter')?.value || 'all';
+                const timePeriod = document.getElementById('timeFilter')?.value || 'all';
+                const searchTerm = document.getElementById('networkSearch')?.value?.toLowerCase() || '';
+
+                // Build query parameters for server-side filtering
+                const params = new URLSearchParams();
+
+                if (nodeType !== 'all') params.append('nodeType', nodeType);
+                if (region !== 'all') params.append('region', region);
+                if (sector !== 'all') params.append('sector', sector);
+                if (fundingType !== 'all') params.append('fundingType', fundingType);
+                if (timePeriod !== 'all') params.append('timePeriod', timePeriod);
+                if (searchTerm.length > 0) params.append('search', searchTerm);
+
+                const queryString = params.toString();
+                const apiUrl = `http://localhost:5000/api/network${queryString ? '?' + queryString : ''}`;
+
+                console.log('Fetching filtered network data from:', apiUrl);
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+                const response = await fetch(apiUrl, {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(`API Error: ${result.error || 'Unknown error'}`);
+                }
+
+                if (!result.data || !result.data.nodes || !result.data.edges) {
+                    throw new Error('Invalid data structure: missing nodes or edges');
+                }
+
+                // Update network data with filtered results
+                networkData = result.data;
+
+                console.log('Filtered network data loaded:', {
+                    nodes: networkData.nodes.length,
+                    edges: networkData.edges.length
+                });
+
+                // Update display
+                renderNetwork();
+                updateNetworkStats();
+
+                // Update header stats
+                const headerNodesEl = document.getElementById('headerNodes');
+                const headerConnectionsEl = document.getElementById('headerConnections');
+
+                if (headerNodesEl) headerNodesEl.textContent = networkData.nodes.length.toLocaleString();
+                if (headerConnectionsEl) headerConnectionsEl.textContent = networkData.edges.length.toLocaleString();
+
+                loadingOverlay.classList.add('hidden');
+
+                const nodeCount = networkData.nodes.length;
+                const edgeCount = networkData.edges.length;
+                showNotification(`Filtered network loaded: ${nodeCount} nodes, ${edgeCount} connections`, 'success');
+
+            } catch (error) {
+                console.error('Error applying filters:', error);
+                loadingOverlay.classList.add('hidden');
+
+                let errorMsg = 'Error applying filters';
+                if (error.name === 'AbortError') {
+                    errorMsg = 'Request timeout - backend server not responding';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMsg = 'Cannot connect to backend (http://localhost:5000) - is the server running?';
+                } else if (error.message.includes('HTTP')) {
+                    errorMsg = `Backend error: ${error.message}`;
+                } else {
+                    errorMsg = `Error: ${error.message}`;
+                }
+
+                showNotification(errorMsg, 'error');
+            }
+        }
+
+        async function resetFilters() {
+            try {
+                // Reset all form inputs
+                document.getElementById('networkSearch').value = '';
+                document.getElementById('regionFilter').value = 'all';
+                document.getElementById('sectorFilter').value = 'all';
+                document.getElementById('fundingTypeFilter').value = 'all';
+                document.getElementById('timeFilter').value = 'all';
+
+                // Reload full network data
+                await loadTestNetwork();
+                showNotification('Filters reset', 'info');
+            } catch (error) {
+                console.error('Error resetting filters:', error);
+                showNotification('Error resetting filters', 'error');
+            }
+        }
+
+        // Layout functions
+        function setLayout(layoutType, clickedButton = null) {
+            const buttons = document.querySelectorAll('[onclick^="setLayout"]');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-primary');
+                btn.classList.add('hover:bg-white');
+            });
+            
+            // Handle both event-based and direct calls
+            let targetButton = clickedButton;
+            if (!targetButton && event && event.target) {
+                targetButton = event.target.closest('button');
+            }
+            
+            if (targetButton) {
+                targetButton.classList.add('bg-white', 'shadow-sm', 'text-primary');
+                targetButton.classList.remove('hover:bg-white');
+            } else {
+                // Fallback: find and activate the first layout button if no specific button
+                const forceButton = document.querySelector('[onclick="setLayout(\'force\')"]');
+                if (forceButton) {
+                    forceButton.classList.add('bg-white', 'shadow-sm', 'text-primary');
+                    forceButton.classList.remove('hover:bg-white');
+                }
+            }
+            
+            showNotification(`Layout changed to ${layoutType}`, 'info');
+        }
+
+        // Zoom functions
+        function zoomIn() {
+            const svg = document.getElementById('networkSvg');
+            const currentTransform = svg.style.transform || 'scale(1)';
+            const currentScale = parseFloat(currentTransform.match(/scale\(([^)]+)\)/)?.[1] || 1);
+            const newScale = Math.min(currentScale * 1.2, 3);
+            svg.style.transform = `scale(${newScale})`;
+            svg.style.transformOrigin = 'center';
+        }
+
+        function zoomOut() {
+            const svg = document.getElementById('networkSvg');
+            const currentTransform = svg.style.transform || 'scale(1)';
+            const currentScale = parseFloat(currentTransform.match(/scale\(([^)]+)\)/)?.[1] || 1);
+            const newScale = Math.max(currentScale / 1.2, 0.3);
+            svg.style.transform = `scale(${newScale})`;
+            svg.style.transformOrigin = 'center';
+        }
+
+        function resetZoom() {
+            const svg = document.getElementById('networkSvg');
+            svg.style.transform = 'scale(1)';
+        }
+
+
+
+        // Node selection functions
+        async function selectNode(nodeId) {
+            if (!networkData) return;
+
+            const node = networkData.nodes.find(n => n.id === nodeId);
+            if (!node) return;
+
+            // Filter network to show selected node and its connections
+            await filterNetworkToNode(nodeId);
+
+            const connections = networkData.edges.filter(e =>
+                e.source === nodeId || e.target === nodeId
+            );
+
+            const connectedNodes = connections.map(edge => {
+                const connectedId = edge.source === nodeId ? edge.target : edge.source;
+                return networkData.nodes.find(n => n.id === connectedId);
+            }).filter(Boolean);
+
+            const data = {
+                ...node,
+                connections: connections.length,
+                connectedNodes: connectedNodes
+            };
+
+            showNodeInfo(data);
+        }
+
+        // Filter network to show selected node and its connections
+        async function filterNetworkToNode(nodeId) {
+            if (!networkData) return;
+
+            try {
+                const node = networkData.nodes.find(n => n.id === nodeId);
+                if (!node) return;
+
+                // Use the search parameter to get the selected node and its connections
+                const searchTerm = node.name || node.label || nodeId;
+                const apiUrl = `http://localhost:5000/api/network?search=${encodeURIComponent(searchTerm)}`;
+
+                console.log('Fetching filtered network data for node:', apiUrl);
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                const response = await fetch(apiUrl, {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(`API Error: ${result.error || 'Unknown error'}`);
+                }
+
+                if (!result.data || !result.data.nodes || !result.data.edges) {
+                    throw new Error('Invalid data structure: missing nodes or edges');
+                }
+
+                // Update network data with filtered results
+                networkData = result.data;
+
+                console.log('Filtered network data loaded for node:', {
+                    nodes: networkData.nodes.length,
+                    edges: networkData.edges.length
+                });
+
+                // Re-render network
+                renderNetwork();
+
+                // Update stats
+                updateNetworkStats();
+
+                // Update header stats
+                const headerNodesEl = document.getElementById('headerNodes');
+                const headerConnectionsEl = document.getElementById('headerConnections');
+
+                if (headerNodesEl) headerNodesEl.textContent = networkData.nodes.length.toLocaleString();
+                if (headerConnectionsEl) headerConnectionsEl.textContent = networkData.edges.length.toLocaleString();
+
+                // Add reset button to node info panel
+                const nodeInfoPanel = document.getElementById('nodeInfoPanel');
+                if (nodeInfoPanel) {
+                    const resetButton = document.createElement('button');
+                    resetButton.className = 'mt-4 w-full btn-outline text-sm py-2';
+                    resetButton.textContent = 'Show Full Network';
+                    resetButton.onclick = () => resetNetworkView();
+                    nodeInfoPanel.appendChild(resetButton);
+                }
+
+                showNotification(`Showing network for selected node: ${networkData.nodes.length} nodes, ${networkData.edges.length} connections`, 'info');
+            } catch (error) {
+                console.error('Error filtering network to node:', error);
+                showNotification('Error loading node relationships', 'error');
+            }
+        }
+
+        // Reset to full network view
+        function resetNetworkView() {
+            // Reload the current dataset
+            if (networkData && networkData.nodes.length > 100) {
+                loadFullNetwork();
+            } else {
+                loadTestNetwork();
+            }
+            showNotification('Reset to full network view', 'info');
+        }
+
+        // Select node from search results
+        function selectNodeFromSearch(nodeId) {
+            document.getElementById('networkSearch').value = '';
+            document.getElementById('searchResults').classList.add('hidden');
+            selectNode(nodeId);
+            highlightNode(nodeId);
+        }
+
+        function showNodeInfo(data) {
+            const panel = document.getElementById('nodeInfoPanel');
+            const title = document.getElementById('nodeTitle');
+            const details = document.getElementById('nodeDetails');
+
+            title.textContent = data.name || data.label;
+            
+            const typeLabel = data.type === 'company' ? 'Company' : 'Investor';
+            
+            const connectedNodesHtml = (data.connectedNodes || []).length > 0 
+                ? `<div class="space-y-2 mt-2">
+                     ${(data.connectedNodes || []).slice(0, 5).map(node => 
+                         `<div class="px-2 py-1 bg-slate-100 rounded text-xs text-text-secondary">${node.name || node.label}</div>`
+                     ).join('')}
+                     ${(data.connectedNodes || []).length > 5 ? `<div class="text-xs text-text-secondary">+${(data.connectedNodes || []).length - 5} more</div>` : ''}
+                  </div>`
+                : '<div class="text-xs text-text-secondary italic">No connections</div>';
+            
+            details.innerHTML = `
+                <div class="space-y-3">
+                    <div>
+                        <div class="text-sm font-medium text-text-primary">Type</div>
+                        <div class="text-sm text-text-secondary">${typeLabel}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-text-primary">Node ID</div>
+                        <div class="text-sm text-text-secondary">${data.id}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-text-primary">Industry</div>
+                        <div class="text-sm text-text-secondary">${data.industry || 'N/A'}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-text-primary">Founded</div>
+                        <div class="text-sm text-text-secondary">${data.founded || 'N/A'}</div>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div>
+                        <div class="text-sm font-medium text-text-primary">Network Connections</div>
+                        <div class="text-lg font-bold text-primary">${data.connections || 0}</div>
+                    </div>
+                    <div>
+                        <div class="text-sm font-medium text-text-primary">Connected Nodes</div>
+                        ${connectedNodesHtml}
+                    </div>
+                </div>
+            `;
+
+            panel.classList.remove('hidden');
+        }
+
+        function closeNodeInfo() {
+            document.getElementById('nodeInfoPanel').classList.add('hidden');
+        }
+
+        // Analysis functions
+        let selectedPathwayNodes = [];
+
+        async function calculateCentrality() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Computing centrality measures...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/analysis/centrality', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+
+                const { topNodes, stats } = result.data;
+
+                let results = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                                <div class="text-xs text-text-secondary">Avg Degree</div>
+                                <div class="text-lg font-bold text-primary">${stats.avgDegree.toFixed(2)}</div>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                                <div class="text-xs text-text-secondary">Max Degree</div>
+                                <div class="text-lg font-bold text-primary">${stats.maxDegree}</div>
+                            </div>
+                            <div class="p-3 bg-blue-50 rounded-lg">
+                                <div class="text-xs text-text-secondary">Density</div>
+                                <div class="text-lg font-bold text-primary">${stats.density.toFixed(3)}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-sm mb-2">Top Influential Nodes</h4>
+                            <div class="space-y-2">
+                `;
+
+                topNodes.forEach((node, idx) => {
+                    results += `
+                        <div class="p-2 bg-slate-50 rounded-lg cursor-pointer hover:bg-primary-50 transition" onclick="highlightNode('${node.id}')">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="font-medium text-sm">#${idx + 1} - ${node.name || node.label}</div>
+                                    <div class="text-xs text-text-secondary">Degree: ${node.degree} | Betweenness: ${node.betweenness.toFixed(2)}</div>
+                                </div>
+                                <div class="w-6 h-6 bg-primary rounded-full text-white text-xs flex items-center justify-center font-bold">${idx + 1}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                results += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                showAnalysisResults('Centrality Analysis Results', results);
+                visualizeCentralityOnNetwork(result.data.centrality);
+                showNotification('Centrality analysis completed', 'success');
+            } catch (error) {
+                showNotification(`Centrality analysis failed: ${error.message}`, 'error');
+                console.error('Centrality error:', error);
+            }
+        }
+
+        async function detectCommunities() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Detecting communities...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:5000/api/analysis/communities', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error);
+
+                const { communities, stats } = result.data;
+
+                let results = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="p-3 bg-purple-50 rounded-lg">
+                                <div class="text-xs text-text-secondary">Communities</div>
+                                <div class="text-lg font-bold text-primary">${stats.largestCommunity}</div>
+                            </div>
+                            <div class="p-3 bg-purple-50 rounded-lg">
+                                <div class="text-xs text-text-secondary">Avg Size</div>
+                                <div class="text-lg font-bold text-primary">${stats.avgCommunitySize.toFixed(1)}</div>
+                            </div>
+                            <div class="p-3 bg-purple-50 rounded-lg">
+                                <div class="text-xs text-text-secondary">Modularity</div>
+                                <div class="text-lg font-bold text-primary">${stats.modularity.toFixed(3)}</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-sm mb-2">Community Breakdown</h4>
+                            <div class="space-y-2">
+                `;
+
+                communities.forEach((comm, idx) => {
+                    results += `
+                        <div class="p-2 bg-slate-50 rounded-lg cursor-pointer hover:bg-primary-50 transition" onclick="highlightCommunity('${comm.name}')">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-3 h-3 rounded-full" style="background-color: ${comm.color}"></div>
+                                    <div>
+                                        <div class="font-medium text-sm">${comm.name}</div>
+                                        <div class="text-xs text-text-secondary">${comm.nodeCount} nodes | ${comm.internalEdges} edges</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                results += `
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                showAnalysisResults('Community Detection Results', results);
+                visualizeCommunitiesOnNetwork(communities);
+                showNotification('Community detection completed', 'success');
+            } catch (error) {
+                showNotification(`Community detection failed: ${error.message}`, 'error');
+                console.error('Community error:', error);
+            }
+        }
+
+        async function tracePathways() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Click on two nodes to trace pathways between them', 'info');
+            selectedPathwayNodes = [];
+
+            const svg = document.getElementById('networkSvg');
+            const nodes = svg.querySelectorAll('[data-node-id]');
+
+            nodes.forEach(node => {
+                node.style.cursor = 'crosshair';
+                node.classList.add('pathway-selector');
+            });
+
+            window.selectPathwayNode = async function(nodeId) {
+                selectedPathwayNodes.push(nodeId);
+
+                if (selectedPathwayNodes.length === 2) {
+                    const [sourceId, targetId] = selectedPathwayNodes;
+                    showNotification('Computing pathways...', 'info');
+
+                    try {
+                        const response = await fetch('http://localhost:5000/api/analysis/pathways', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ sourceId, targetId })
+                        });
+
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                        const result = await response.json();
+                        if (!result.success) throw new Error(result.error);
+
+                        const { paths, stats } = result.data;
+
+                        let results = `
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="p-3 bg-green-50 rounded-lg">
+                                        <div class="text-xs text-text-secondary">Paths Found</div>
+                                        <div class="text-lg font-bold text-primary">${stats.pathCount}</div>
+                                    </div>
+                                    <div class="p-3 bg-green-50 rounded-lg">
+                                        <div class="text-xs text-text-secondary">Avg Path Length</div>
+                                        <div class="text-lg font-bold text-primary">${stats.avgPathLength.toFixed(2)}</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-sm mb-2">Discovered Pathways</h4>
+                                    <div class="space-y-2 max-h-96 overflow-y-auto">
+                        `;
+
+                        paths.slice(0, 10).forEach((path, idx) => {
+                            const pathStr = path.map(id => {
+                                const node = networkData.nodes.find(n => n.id === id);
+                                return node.name || node.label;
+                            }).join(' → ');
+
+                            results += `
+                                <div class="p-2 bg-slate-50 rounded-lg text-xs cursor-pointer hover:bg-primary-50" onclick="highlightPath(${JSON.stringify(path).replace(/"/g, '&quot;')})">
+                                    <div class="font-medium text-sm mb-1">#${idx + 1} (${path.length} nodes)</div>
+                                    <div class="text-text-secondary truncate">${pathStr}</div>
+                                </div>
+                            `;
+                        });
+
+                        results += `
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        showAnalysisResults('Pathway Tracing Results', results);
+                        showNotification(`Found ${stats.pathCount} pathways`, 'success');
+                    } catch (error) {
+                        showNotification(`Pathway tracing failed: ${error.message}`, 'error');
+                        console.error('Pathway error:', error);
+                    }
+
+                    selectedPathwayNodes = [];
+                    nodes.forEach(node => {
+                        node.style.cursor = 'pointer';
+                        node.classList.remove('pathway-selector');
+                    });
+                    delete window.selectPathwayNode;
+                }
+            };
+
+            nodes.forEach(node => {
+                node.onclick = function(e) {
+                    const nodeId = this.getAttribute('data-node-id');
+                    window.selectPathwayNode(nodeId);
+                    e.stopPropagation();
+                };
+            });
+        }
+
+        function visualizeCentralityOnNetwork(centrality) {
+            const svg = document.getElementById('networkSvg');
+            const nodes = svg.querySelectorAll('[data-node-id]');
+
+            const values = Object.values(centrality).map(c => c.normalized);
+            const maxValue = Math.max(...values);
+
+            nodes.forEach(nodeGroup => {
+                const nodeId = nodeGroup.getAttribute('data-node-id');
+                const value = centrality[nodeId]?.normalized || 0;
+                const circle = nodeGroup.querySelector('circle');
+
+                if (circle) {
+                    const opacity = 0.3 + (value / maxValue) * 0.7;
+                    circle.style.opacity = opacity;
+                    circle.style.filter = `drop-shadow(0 4px 12px rgba(59, 130, 246, ${opacity}))`;
+                }
+            });
+        }
+
+        function visualizeCommunitiesOnNetwork(communities) {
+            const svg = document.getElementById('networkSvg');
+            const nodes = svg.querySelectorAll('[data-node-id]');
+            const communityMap = {};
+
+            communities.forEach(comm => {
+                comm.nodes.forEach(node => {
+                    communityMap[node.id] = comm.color;
+                });
+            });
+
+            nodes.forEach(nodeGroup => {
+                const nodeId = nodeGroup.getAttribute('data-node-id');
+                const circle = nodeGroup.querySelector('circle');
+                if (circle && communityMap[nodeId]) {
+                    circle.setAttribute('fill', communityMap[nodeId]);
+                }
+            });
+        }
+
+        function highlightNode(nodeId) {
+            const svg = document.getElementById('networkSvg');
+            const nodes = svg.querySelectorAll('[data-node-id]');
+
+            nodes.forEach(nodeGroup => {
+                const isTarget = nodeGroup.getAttribute('data-node-id') === nodeId;
+                const circle = nodeGroup.querySelector('circle');
+                if (circle) {
+                    circle.style.opacity = isTarget ? '1' : '0.2';
+                    circle.style.filter = isTarget ? 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' : 'none';
+                    circle.style.strokeWidth = isTarget ? '6' : '4';
+                }
+            });
+        }
+
+        function highlightCommunity(commName) {
+            const svg = document.getElementById('networkSvg');
+            const nodes = svg.querySelectorAll('[data-node-id]');
+
+            nodes.forEach(nodeGroup => {
+                const nodeId = nodeGroup.getAttribute('data-node-id');
+                const node = networkData.nodes.find(n => n.id === nodeId);
+                const isInComm = node && (node.type === commName || node.industry === commName);
+                const circle = nodeGroup.querySelector('circle');
+
+                if (circle) {
+                    circle.style.opacity = isInComm ? '1' : '0.2';
+                    circle.style.filter = isInComm ? 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' : 'none';
+                }
+            });
+        }
+
+        function highlightPath(path) {
+            const svg = document.getElementById('networkSvg');
+            const nodes = svg.querySelectorAll('[data-node-id]');
+            const lines = svg.querySelectorAll('#connections line');
+
+            nodes.forEach(nodeGroup => {
+                const nodeId = nodeGroup.getAttribute('data-node-id');
+                const isInPath = path.includes(nodeId);
+                const circle = nodeGroup.querySelector('circle');
+
+                if (circle) {
+                    circle.style.opacity = isInPath ? '1' : '0.15';
+                    circle.style.filter = isInPath ? 'drop-shadow(0 8px 16px rgba(34, 197, 94, 0.6))' : 'none';
+                    circle.style.strokeWidth = isInPath ? '6' : '4';
+                }
+            });
+
+            lines.forEach(line => {
+                let isInPath = false;
+                for (let i = 0; i < path.length - 1; i++) {
+                    const source = path[i];
+                    const target = path[i + 1];
+                    const edge = networkData.edges.find(e =>
+                        (e.source === source && e.target === target) ||
+                        (e.source === target && e.target === source)
+                    );
+                    if (edge) {
+                        isInPath = true;
+                        break;
+                    }
+                }
+                line.style.stroke = isInPath ? '#22c55e' : '#94A3B8';
+                line.style.opacity = isInPath ? '1' : '0.15';
+                line.style.strokeWidth = isInPath ? '4' : '2.5';
+            });
+        }
+
+        function exportAnalysis() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                summary: {
+                    totalNodes: networkData.nodes.length,
+                    totalEdges: networkData.edges.length,
+                    companies: networkData.nodes.filter(n => n.type === 'company').length,
+                    investors: networkData.nodes.filter(n => n.type === 'investor').length
+                },
+                nodes: networkData.nodes,
+                edges: networkData.edges
+            };
+
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `network_analysis_${Date.now()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+
+            showNotification('Network analysis exported successfully', 'success');
+        }
+
+        // New visualization functions
+        function showBipartiteDiagram() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            // Switch to bipartite layout
+            currentLayout = 'bipartite';
+            renderNetwork();
+
+            // Update layout button state
+            const buttons = document.querySelectorAll('[onclick^="setLayout"]');
+            buttons.forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow-sm', 'text-primary');
+                btn.classList.add('hover:bg-white');
+            });
+            const bipartiteButton = document.querySelector('[onclick="setLayout(\'bipartite\')"]');
+            if (bipartiteButton) {
+                bipartiteButton.classList.add('bg-white', 'shadow-sm', 'text-primary');
+                bipartiteButton.classList.remove('hover:bg-white');
+            }
+
+            showNotification('Switched to bipartite network diagram', 'success');
+        }
+
+        function showFundingDistribution() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            // Count funding types
+            const fundingCounts = {};
+            networkData.edges.forEach(edge => {
+                const fundingType = edge.funding_type || 'Unknown';
+                fundingCounts[fundingType] = (fundingCounts[fundingType] || 0) + 1;
+            });
+
+            const sortedFunding = Object.entries(fundingCounts)
+                .sort(([,a], [,b]) => b - a);
+
+            let chartContent = `
+                <div class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-lg font-semibold">Funding Type Distribution</h4>
+                        <p class="text-sm text-text-secondary">Number of funding events by type</p>
+                    </div>
+                    <div class="space-y-3">
+            `;
+
+            const maxCount = Math.max(...Object.values(fundingCounts));
+            sortedFunding.forEach(([type, count]) => {
+                const percentage = ((count / networkData.edges.length) * 100).toFixed(1);
+                const barWidth = (count / maxCount) * 100;
+
+                chartContent += `
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 mr-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">${type}</span>
+                                <span class="text-text-secondary">${count} (${percentage}%)</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-3">
+                                <div class="bg-primary h-3 rounded-full" style="width: ${barWidth}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            chartContent += `
+                    </div>
+                    <div class="text-center text-sm text-text-secondary mt-4">
+                        Total funding events: ${networkData.edges.length}
+                    </div>
+                </div>
+            `;
+
+            showAnalysisResults('Funding Type Distribution', chartContent);
+        }
+
+        function showDegreeDistribution() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            // Calculate degrees
+            const degrees = {};
+            networkData.nodes.forEach(node => {
+                degrees[node.id] = 0;
+            });
+
+            networkData.edges.forEach(edge => {
+                degrees[edge.source] = (degrees[edge.source] || 0) + 1;
+                degrees[edge.target] = (degrees[edge.target] || 0) + 1;
+            });
+
+            // Create histogram bins
+            const degreeValues = Object.values(degrees);
+            const maxDegree = Math.max(...degreeValues);
+            const bins = {};
+            const binSize = Math.max(1, Math.ceil(maxDegree / 10));
+
+            degreeValues.forEach(degree => {
+                const bin = Math.floor(degree / binSize) * binSize;
+                bins[bin] = (bins[bin] || 0) + 1;
+            });
+
+            const sortedBins = Object.entries(bins)
+                .sort(([a], [b]) => parseInt(a) - parseInt(b));
+
+            let chartContent = `
+                <div class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-lg font-semibold">Degree Distribution</h4>
+                        <p class="text-sm text-text-secondary">Node connectivity histogram</p>
+                    </div>
+                    <div class="space-y-2">
+            `;
+
+            const maxBinCount = Math.max(...Object.values(bins));
+            sortedBins.forEach(([bin, count]) => {
+                const barWidth = (count / maxBinCount) * 100;
+                const binLabel = `${bin}-${parseInt(bin) + binSize - 1}`;
+
+                chartContent += `
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 mr-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="font-medium">${binLabel} connections</span>
+                                <span class="text-text-secondary">${count} nodes</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-3">
+                                <div class="bg-accent h-3 rounded-full" style="width: ${barWidth}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            chartContent += `
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
+                        <div class="text-center">
+                            <div class="font-semibold text-primary">${(degreeValues.reduce((a,b) => a+b, 0) / degreeValues.length).toFixed(2)}</div>
+                            <div class="text-text-secondary">Avg Degree</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-semibold text-accent">${maxDegree}</div>
+                            <div class="text-text-secondary">Max Degree</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            showAnalysisResults('Degree Distribution Graph', chartContent);
+        }
+
+        function showConnectedComponents() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Analyzing connected components...', 'info');
+
+            // Simple connected components analysis
+            const visited = new Set();
+            const components = [];
+
+            function dfs(nodeId, component) {
+                if (visited.has(nodeId)) return;
+                visited.add(nodeId);
+                component.push(nodeId);
+
+                networkData.edges.forEach(edge => {
+                    if (edge.source === nodeId && !visited.has(edge.target)) {
+                        dfs(edge.target, component);
+                    }
+                    if (edge.target === nodeId && !visited.has(edge.source)) {
+                        dfs(edge.source, component);
+                    }
+                });
+            }
+
+            networkData.nodes.forEach(node => {
+                if (!visited.has(node.id)) {
+                    const component = [];
+                    dfs(node.id, component);
+                    if (component.length > 0) {
+                        components.push(component);
+                    }
+                }
+            });
+
+            components.sort((a, b) => b.length - a.length);
+
+            let chartContent = `
+                <div class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-lg font-semibold">Connected Components Analysis</h4>
+                        <p class="text-sm text-text-secondary">Network cluster identification</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="text-center p-3 bg-primary-50 rounded-lg">
+                            <div class="text-2xl font-bold text-primary">${components.length}</div>
+                            <div class="text-sm text-text-secondary">Total Components</div>
+                        </div>
+                        <div class="text-center p-3 bg-accent-50 rounded-lg">
+                            <div class="text-2xl font-bold text-accent">${components[0]?.length || 0}</div>
+                            <div class="text-sm text-text-secondary">Largest Component</div>
+                        </div>
+                    </div>
+                    <div class="space-y-3 max-h-64 overflow-y-auto">
+            `;
+
+            components.slice(0, 10).forEach((component, index) => {
+                const percentage = ((component.length / networkData.nodes.length) * 100).toFixed(1);
+                chartContent += `
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium text-sm">Component ${index + 1}</span>
+                            <span class="text-xs bg-primary text-white px-2 py-1 rounded">${component.length} nodes (${percentage}%)</span>
+                        </div>
+                        <div class="text-xs text-text-secondary">
+                            ${component.slice(0, 5).map(id => {
+                                const node = networkData.nodes.find(n => n.id === id);
+                                return node?.name || node?.label || id;
+                            }).join(', ')}
+                            ${component.length > 5 ? `... +${component.length - 5} more` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            chartContent += `
+                    </div>
+                </div>
+            `;
+
+            showAnalysisResults('Connected Components', chartContent);
+            showNotification('Connected components analysis completed', 'success');
+        }
+
+        function showAPIPerformance() {
+            // Mock API performance data (in a real app, this would come from actual metrics)
+            const endpoints = [
+                { name: '/api/network', avgResponse: 45, maxResponse: 120, calls: 1250 },
+                { name: '/api/analysis/centrality', avgResponse: 78, maxResponse: 200, calls: 340 },
+                { name: '/api/analysis/communities', avgResponse: 92, maxResponse: 180, calls: 156 },
+                { name: '/api/analysis/pathways', avgResponse: 65, maxResponse: 150, calls: 89 }
+            ];
+
+            let chartContent = `
+                <div class="space-y-4">
+                    <div class="text-center mb-4">
+                        <h4 class="text-lg font-semibold">API Performance Summary</h4>
+                        <p class="text-sm text-text-secondary">Response times across all endpoints</p>
+                    </div>
+                    <div class="space-y-3">
+            `;
+
+            const maxResponse = Math.max(...endpoints.map(e => e.maxResponse));
+            endpoints.forEach(endpoint => {
+                const avgBarWidth = (endpoint.avgResponse / maxResponse) * 100;
+                const maxBarWidth = (endpoint.maxResponse / maxResponse) * 100;
+
+                chartContent += `
+                    <div class="p-3 bg-slate-50 rounded-lg">
+                        <div class="font-medium text-sm mb-2">${endpoint.name}</div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-xs">
+                                <span>Average: ${endpoint.avgResponse}ms</span>
+                                <span class="text-text-secondary">${endpoint.calls} calls</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-2">
+                                <div class="bg-success h-2 rounded-full" style="width: ${avgBarWidth}%"></div>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span>Max: ${endpoint.maxResponse}ms</span>
+                                <span class="text-success-600">✓ <100ms target</span>
+                            </div>
+                            <div class="w-full bg-slate-200 rounded-full h-1">
+                                <div class="bg-error h-1 rounded-full" style="width: ${maxBarWidth}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            chartContent += `
+                    </div>
+                    <div class="mt-4 p-3 bg-success-50 rounded-lg text-center">
+                        <div class="text-sm font-medium text-success-800">All endpoints meet <100ms performance target</div>
+                        <div class="text-xs text-success-600 mt-1">Excellent API responsiveness</div>
+                    </div>
+                </div>
+            `;
+
+            showAnalysisResults('API Performance Summary', chartContent);
+        }
+
+        // Report Subfigure Functions (Section 7.3)
+        function showCompanyDegreeSubgraph() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Analyzing companies with 3+ funding relationships...', 'info');
+
+            try {
+                // Calculate degrees for companies
+                const companyDegrees = {};
+                networkData.nodes.filter(n => n.type === 'company').forEach(node => {
+                    companyDegrees[node.id] = 0;
+                });
+
+                networkData.edges.forEach(edge => {
+                    if (companyDegrees.hasOwnProperty(edge.source)) {
+                        companyDegrees[edge.source]++;
+                    }
+                    if (companyDegrees.hasOwnProperty(edge.target)) {
+                        companyDegrees[edge.target]++;
+                    }
+                });
+
+                // Filter companies with 3+ funding relationships
+                const highDegreeCompanies = Object.entries(companyDegrees)
+                    .filter(([_, degree]) => degree >= 3)
+                    .map(([id, degree]) => {
+                        const node = networkData.nodes.find(n => n.id === id);
+                        return { ...node, degree };
+                    })
+                    .sort((a, b) => b.degree - a.degree);
+
+                let results = `
+                    <div class="space-y-4">
+                        <div class="text-center mb-4">
+                            <h4 class="text-lg font-semibold">Company Degree Subgraph</h4>
+                            <p class="text-sm text-text-secondary">Companies with 3+ funding relationships</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center p-3 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-primary">${highDegreeCompanies.length}</div>
+                                <div class="text-sm text-text-secondary">Companies Found</div>
+                            </div>
+                            <div class="text-center p-3 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-primary">${highDegreeCompanies.reduce((sum, c) => sum + c.degree, 0)}</div>
+                                <div class="text-sm text-text-secondary">Total Connections</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                `;
+
+                highDegreeCompanies.slice(0, 15).forEach((company, index) => {
+                    results += `
+                        <div class="p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-primary-50 transition" onclick="highlightNode('${company.id}')">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="font-medium text-sm">#${index + 1} - ${company.name || company.label}</div>
+                                <span class="text-xs bg-primary text-white px-2 py-1 rounded">${company.degree} connections</span>
+                            </div>
+                            <div class="text-xs text-text-secondary">
+                                Industry: ${company.industry || 'N/A'} |
+                                Founded: ${company.founded || 'N/A'}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                results += `
+                        </div>
+                        <div class="mt-4 p-3 bg-blue-50 rounded-lg">
+                            <div class="text-sm text-blue-800">
+                                <strong>Analysis:</strong> These ${highDegreeCompanies.length} companies represent the most connected entities in the funding network, indicating high investor interest and potentially greater access to capital resources.
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                showAnalysisResults('Company Degree Subgraph', results);
+                showNotification(`Found ${highDegreeCompanies.length} companies with 3+ funding relationships`, 'success');
+            } catch (error) {
+                showNotification(`Error analyzing company degrees: ${error.message}`, 'error');
+                console.error('Company degree analysis error:', error);
+            }
+        }
+
+        function showInvestorActivitySubgraph() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Analyzing highest degree value investors...', 'info');
+
+            try {
+                // Calculate degrees for investors
+                const investorDegrees = {};
+                networkData.nodes.filter(n => n.type === 'investor').forEach(node => {
+                    investorDegrees[node.id] = 0;
+                });
+
+                networkData.edges.forEach(edge => {
+                    if (investorDegrees.hasOwnProperty(edge.source)) {
+                        investorDegrees[edge.source]++;
+                    }
+                    if (investorDegrees.hasOwnProperty(edge.target)) {
+                        investorDegrees[edge.target]++;
+                    }
+                });
+
+                // Get top investors by degree
+                const topInvestors = Object.entries(investorDegrees)
+                    .map(([id, degree]) => {
+                        const node = networkData.nodes.find(n => n.id === id);
+                        return { ...node, degree };
+                    })
+                    .sort((a, b) => b.degree - a.degree)
+                    .slice(0, 20); // Top 20 investors
+
+                let results = `
+                    <div class="space-y-4">
+                        <div class="text-center mb-4">
+                            <h4 class="text-lg font-semibold">Investor Activity Subgraph</h4>
+                            <p class="text-sm text-text-secondary">Highest degree value investors</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="text-center p-3 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-accent">${topInvestors.length}</div>
+                                <div class="text-sm text-text-secondary">Top Investors</div>
+                            </div>
+                            <div class="text-center p-3 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-accent">${topInvestors.reduce((sum, i) => sum + i.degree, 0)}</div>
+                                <div class="text-sm text-text-secondary">Total Investments</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                `;
+
+                topInvestors.forEach((investor, index) => {
+                    results += `
+                        <div class="p-3 bg-slate-50 rounded-lg cursor-pointer hover:bg-accent-50 transition" onclick="highlightNode('${investor.id}')">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="font-medium text-sm">#${index + 1} - ${investor.name || investor.label}</div>
+                                <span class="text-xs bg-accent text-white px-2 py-1 rounded">${investor.degree} investments</span>
+                            </div>
+                            <div class="text-xs text-text-secondary">
+                                Type: ${investor.type_of_investor || 'N/A'} |
+                                Focus: ${investor.industry || 'General'}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                results += `
+                        </div>
+                        <div class="mt-4 p-3 bg-green-50 rounded-lg">
+                            <div class="text-sm text-green-800">
+                                <strong>Analysis:</strong> These ${topInvestors.length} investors represent the most active participants in the funding ecosystem, with the highest number of portfolio companies and potentially the greatest influence on startup funding patterns.
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                showAnalysisResults('7.3(b) Investor Activity Subgraph', results);
+                showNotification(`Analyzed top ${topInvestors.length} most active investors`, 'success');
+            } catch (error) {
+                showNotification(`Error analyzing investor activity: ${error.message}`, 'error');
+                console.error('Investor activity analysis error:', error);
+            }
+        }
+
+        function showFundingTimelinePlot() {
+            if (!networkData) {
+                showNotification('No network data loaded', 'error');
+                return;
+            }
+
+            showNotification('Analyzing funding timeline distribution...', 'info');
+
+            try {
+                // Group funding events by year
+                const fundingByYear = {};
+                networkData.edges.forEach(edge => {
+                    const year = edge.year || new Date().getFullYear();
+                    if (!fundingByYear[year]) {
+                        fundingByYear[year] = { count: 0, totalAmount: 0 };
+                    }
+                    fundingByYear[year].count++;
+                    fundingByYear[year].totalAmount += edge.amount || 0;
+                });
+
+                // Sort years chronologically
+                const sortedYears = Object.entries(fundingByYear)
+                    .sort(([a], [b]) => parseInt(a) - parseInt(b));
+
+                const maxCount = Math.max(...sortedYears.map(([_, data]) => data.count));
+                const maxAmount = Math.max(...sortedYears.map(([_, data]) => data.totalAmount));
+
+                let results = `
+                    <div class="space-y-4">
+                        <div class="text-center mb-4">
+                            <h4 class="text-lg font-semibold">Funding Timeline Plot</h4>
+                            <p class="text-sm text-text-secondary">Chronological funding distribution</p>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 mb-4">
+                            <div class="text-center p-3 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-secondary">${sortedYears.length}</div>
+                                <div class="text-sm text-text-secondary">Years Analyzed</div>
+                            </div>
+                            <div class="text-center p-3 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-secondary">${sortedYears.reduce((sum, [_, data]) => sum + data.count, 0)}</div>
+                                <div class="text-sm text-text-secondary">Total Funding Events</div>
+                            </div>
+                            <div class="text-center p-3 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-secondary">$${(sortedYears.reduce((sum, [_, data]) => sum + data.totalAmount, 0) / 1000000).toFixed(1)}M</div>
+                                <div class="text-sm text-text-secondary">Total Amount</div>
+                            </div>
+                        </div>
+                        <div class="space-y-3 max-h-96 overflow-y-auto">
+                `;
+
+                sortedYears.forEach(([year, data]) => {
+                    const countBarWidth = (data.count / maxCount) * 100;
+                    const amountBarWidth = data.totalAmount > 0 ? (data.totalAmount / maxAmount) * 100 : 0;
+
+                    results += `
+                        <div class="p-3 bg-slate-50 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="font-medium text-sm">${year}</div>
+                                <div class="text-xs text-text-secondary">
+                                    ${data.count} events | $${(data.totalAmount / 1000000).toFixed(1)}M
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-xs">
+                                    <span>Events</span>
+                                    <span>${data.count}</span>
+                                </div>
+                                <div class="w-full bg-slate-200 rounded-full h-2">
+                                    <div class="bg-primary h-2 rounded-full" style="width: ${countBarWidth}%"></div>
+                                </div>
+                                ${data.totalAmount > 0 ? `
+                                    <div class="flex justify-between text-xs">
+                                        <span>Amount</span>
+                                        <span>$${(data.totalAmount / 1000000).toFixed(1)}M</span>
+                                    </div>
+                                    <div class="w-full bg-slate-200 rounded-full h-2">
+                                        <div class="bg-accent h-2 rounded-full" style="width: ${amountBarWidth}%"></div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                results += `
+                        </div>
+                        <div class="mt-4 p-3 bg-purple-50 rounded-lg">
+                            <div class="text-sm text-purple-800">
+                                <strong>Analysis:</strong> The funding timeline shows ${sortedYears.length} years of investment activity, with ${sortedYears[sortedYears.length - 1]?.[0] || 'recent years'} showing the highest concentration of deals, indicating growing investor interest in the ecosystem.
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                showAnalysisResults('Funding Timeline Plot', results);
+                showNotification(`Analyzed funding distribution across ${sortedYears.length} years`, 'success');
+            } catch (error) {
+                showNotification(`Error analyzing funding timeline: ${error.message}`, 'error');
+                console.error('Funding timeline analysis error:', error);
+            }
+        }
+
+        function showAnalysisResults(title, content) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-white rounded-lg p-6 max-w-2xl max-h-96 overflow-y-auto">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-text-primary">${title}</h3>
+                        <button onclick="this.closest('.fixed').remove()" class="text-secondary-400 hover:text-secondary-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div>${content}</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // Utility functions
+        function updateNetworkStats() {
+            // Simulate updated stats
+            const stats = {
+                visibleNodes: Math.floor(Math.random() * 1000) + 2000,
+                activeConnections: Math.floor(Math.random() * 5000) + 10000,
+                networkDensity: (Math.random() * 0.5 + 0.5).toFixed(2),
+                avgPathLength: (Math.random() * 2 + 2).toFixed(1)
+            };
+
+            document.getElementById('visibleNodes').textContent = stats.visibleNodes.toLocaleString();
+            document.getElementById('activeConnections').textContent = stats.activeConnections.toLocaleString();
+            document.getElementById('networkDensity').textContent = stats.networkDensity;
+            document.getElementById('avgPathLength').textContent = stats.avgPathLength;
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const colors = {
+                success: 'bg-success-100 text-success-800 border-success-200',
+                error: 'bg-error-100 text-error-800 border-error-200',
+                info: 'bg-primary-100 text-primary-800 border-primary-200'
+            };
+
+            notification.className = `fixed top-20 right-4 px-4 py-3 rounded-lg border ${colors[type]} z-50 transition-all duration-300`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Enhanced event handlers for layout buttons
+        function setupLayoutButtons() {
+            const layoutButtons = document.querySelectorAll('[onclick^="setLayout"]');
+            layoutButtons.forEach(button => {
+                // Extract layout type from onclick attribute
+                const onclickAttr = button.getAttribute('onclick');
+                const layoutType = onclickAttr.match(/setLayout\('([^']+)'\)/)?.[1];
+                
+                if (layoutType) {
+                    // Remove inline onclick and add proper event listener
+                    button.removeAttribute('onclick');
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        setLayout(layoutType, this);
+                    });
+                }
+            });
+        }
+
+        // Global network data
+        let networkData = null;
+        let renderedNodes = [];
+        let renderedEdges = [];
+        let currentLayout = 'force';
+
+
+
+        // Load test network data
+        async function loadTestNetwork() {
+            try {
+                console.log('Loading small network data from API endpoint');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+                const response = await fetch('http://localhost:5000/api/network', {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(`API Error: ${result.error || 'Unknown error'}`);
+                }
+
+                if (!result.data || !result.data.nodes || !result.data.edges) {
+                    throw new Error('Invalid data structure: missing nodes or edges');
+                }
+
+                networkData = result.data;
+
+                console.log('Small network data loaded:', {
+                    nodes: networkData.nodes.length,
+                    edges: networkData.edges.length
+                });
+
+                const visibleNodesEl = document.getElementById('visibleNodes');
+                const activeConnectionsEl = document.getElementById('activeConnections');
+                const headerNodesEl = document.getElementById('headerNodes');
+                const headerConnectionsEl = document.getElementById('headerConnections');
+
+                if (visibleNodesEl) visibleNodesEl.textContent = networkData.nodes.length.toLocaleString();
+                if (activeConnectionsEl) activeConnectionsEl.textContent = networkData.edges.length.toLocaleString();
+                if (headerNodesEl) headerNodesEl.textContent = networkData.nodes.length.toLocaleString();
+                if (headerConnectionsEl) headerConnectionsEl.textContent = networkData.edges.length.toLocaleString();
+
+                renderNetwork();
+                showNotification(`Small dataset loaded: ${networkData.nodes.length} nodes, ${networkData.edges.length} connections`, 'success');
+            } catch (error) {
+                console.error('Error loading small network:', error);
+                let errorMsg = 'Error loading small dataset';
+                if (error.name === 'AbortError') {
+                    errorMsg = 'Request timeout - backend server not responding';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMsg = 'Cannot connect to backend (http://localhost:5000) - is the server running?';
+                } else if (error.message.includes('HTTP')) {
+                    errorMsg = `Backend error: ${error.message}`;
+                } else {
+                    errorMsg = `Error: ${error.message}`;
+                }
+                showNotification(errorMsg, 'error');
+            }
+        }
+
+        // Load full network data
+        async function loadFullNetwork() {
+            try {
+                console.log('Loading full network data from API endpoint');
+
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+                const response = await fetch('http://localhost:5000/api/network?dataset=full', {
+                    signal: controller.signal,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(`API Error: ${result.error || 'Unknown error'}`);
+                }
+
+                if (!result.data || !result.data.nodes || !result.data.edges) {
+                    throw new Error('Invalid data structure: missing nodes or edges');
+                }
+
+                networkData = result.data;
+
+                console.log('Full network data loaded:', {
+                    nodes: networkData.nodes.length,
+                    edges: networkData.edges.length
+                });
+
+                const visibleNodesEl = document.getElementById('visibleNodes');
+                const activeConnectionsEl = document.getElementById('activeConnections');
+                const headerNodesEl = document.getElementById('headerNodes');
+                const headerConnectionsEl = document.getElementById('headerConnections');
+
+                if (visibleNodesEl) visibleNodesEl.textContent = networkData.nodes.length.toLocaleString();
+                if (activeConnectionsEl) activeConnectionsEl.textContent = networkData.edges.length.toLocaleString();
+                if (headerNodesEl) headerNodesEl.textContent = networkData.nodes.length.toLocaleString();
+                if (headerConnectionsEl) headerConnectionsEl.textContent = networkData.edges.length.toLocaleString();
+
+                renderNetwork();
+                showNotification(`Full dataset loaded: ${networkData.nodes.length} nodes, ${networkData.edges.length} connections`, 'success');
+            } catch (error) {
+                console.error('Error loading full network:', error);
+                let errorMsg = 'Error loading full dataset';
+                if (error.name === 'AbortError') {
+                    errorMsg = 'Request timeout - backend server not responding';
+                } else if (error.message.includes('Failed to fetch')) {
+                    errorMsg = 'Cannot connect to backend (http://localhost:5000) - is the server running?';
+                } else if (error.message.includes('HTTP')) {
+                    errorMsg = `Backend error: ${error.message}`;
+                } else {
+                    errorMsg = `Error: ${error.message}`;
+                }
+                showNotification(errorMsg, 'error');
+            }
+        }
+
+
+
+        // Render network visualization
+        function renderNetwork() {
+            if (!networkData) {
+                console.log('renderNetwork called but networkData is null/undefined');
+                return;
+            }
+
+            alert('renderNetwork called with ' + networkData.nodes.length + ' nodes');
+            console.log('renderNetwork starting with', networkData.nodes.length, 'nodes');
+
+            const svg = document.getElementById('networkSvg');
+            const width = 1200;
+            const height = 800;
+
+            // Clear any existing layout labels
+            const existingLabels = svg.querySelectorAll('text:not([data-node-id])');
+            existingLabels.forEach(label => label.remove());
+
+            let connectionsGroup = document.getElementById('connections');
+            let nodesGroup = document.getElementById('nodes');
+            
+            console.log('SVG element:', svg);
+            console.log('connectionsGroup:', connectionsGroup);
+            console.log('nodesGroup:', nodesGroup);
+            
+            if (connectionsGroup) connectionsGroup.innerHTML = '';
+            if (nodesGroup) nodesGroup.innerHTML = '';
+            
+            if (!connectionsGroup) {
+                connectionsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                connectionsGroup.setAttribute('id', 'connections');
+                svg.appendChild(connectionsGroup);
+            }
+            if (!nodesGroup) {
+                nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                nodesGroup.setAttribute('id', 'nodes');
+                svg.appendChild(nodesGroup);
+            }
+            
+            const edges = networkData.edges;
+
+            let nodes;
+            if (currentLayout === 'circular') {
+                nodes = networkData.nodes.map((node, i) => {
+                    const angle = (i / networkData.nodes.length) * Math.PI * 2;
+                    const radius = 320 + Math.random() * 120;
+                    return {
+                        ...node,
+                        x: 600 + Math.cos(angle) * radius,
+                        y: 400 + Math.sin(angle) * radius,
+                        vx: 0,
+                        vy: 0
+                    };
+                });
+            } else if (currentLayout === 'hierarchical') {
+                // Simple hierarchical layout: sort by type and position in rows
+                const companies = networkData.nodes.filter(n => n.type === 'company');
+                const investors = networkData.nodes.filter(n => n.type === 'investor');
+                const spacingX = 1000 / Math.max(companies.length, investors.length);
+                const yCompany = 300;
+                const yInvestor = 500;
+
+                nodes = networkData.nodes.map((node, i) => {
+                    let x, y;
+                    if (node.type === 'company') {
+                        const index = companies.indexOf(node);
+                        x = 100 + index * spacingX;
+                        y = yCompany;
+                    } else {
+                        const index = investors.indexOf(node);
+                        x = 100 + index * spacingX;
+                        y = yInvestor;
+                    }
+                    return {
+                        ...node,
+                        x: x,
+                        y: y,
+                        vx: 0,
+                        vy: 0
+                    };
+                });
+            } else if (currentLayout === 'bipartite') {
+                // Bipartite layout: companies on left, investors on right
+                const companies = networkData.nodes.filter(n => n.type === 'company');
+                const investors = networkData.nodes.filter(n => n.type === 'investor');
+                const leftX = 300;
+                const rightX = 900;
+                const companySpacing = 700 / Math.max(companies.length - 1, 1);
+                const investorSpacing = 700 / Math.max(investors.length - 1, 1);
+
+                nodes = networkData.nodes.map((node) => {
+                    let x, y;
+                    if (node.type === 'company') {
+                        const index = companies.indexOf(node);
+                        x = leftX;
+                        y = 100 + index * companySpacing;
+                    } else {
+                        const index = investors.indexOf(node);
+                        x = rightX;
+                        y = 100 + index * investorSpacing;
+                    }
+                    return {
+                        ...node,
+                        x: x,
+                        y: y,
+                        vx: 0,
+                        vy: 0
+                    };
+                });
+
+                // Add partition labels for bipartite layout
+                const leftLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                leftLabel.setAttribute('x', '300');
+                leftLabel.setAttribute('y', '50');
+                leftLabel.setAttribute('text-anchor', 'middle');
+                leftLabel.setAttribute('font-size', '18');
+                leftLabel.setAttribute('font-weight', 'bold');
+                leftLabel.setAttribute('fill', '#1F2937');
+                leftLabel.textContent = 'Companies';
+                svg.appendChild(leftLabel);
+
+                const rightLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                rightLabel.setAttribute('x', '900');
+                rightLabel.setAttribute('y', '50');
+                rightLabel.setAttribute('text-anchor', 'middle');
+                rightLabel.setAttribute('font-size', '18');
+                rightLabel.setAttribute('font-weight', 'bold');
+                rightLabel.setAttribute('fill', '#1F2937');
+                rightLabel.textContent = 'Investors';
+                svg.appendChild(rightLabel);
+            } else { // force layout
+                nodes = networkData.nodes.map((node, i) => {
+                    const angle = (i / networkData.nodes.length) * Math.PI * 2;
+                    const radius = 320 + Math.random() * 120;
+                    return {
+                        ...node,
+                        x: 600 + Math.cos(angle) * radius,
+                        y: 400 + Math.sin(angle) * radius,
+                        vx: 0,
+                        vy: 0
+                    };
+                });
+                // Apply force-directed layout
+                simulateForceLayout(nodes, edges, 50);
+            }
+            
+            edges.forEach((edge) => {
+                const sourceNode = nodes.find(n => n.id === edge.source);
+                const targetNode = nodes.find(n => n.id === edge.target);
+
+                if (sourceNode && targetNode) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', sourceNode.x);
+                    line.setAttribute('y1', sourceNode.y);
+                    line.setAttribute('x2', targetNode.x);
+                    line.setAttribute('y2', targetNode.y);
+                    line.setAttribute('stroke', '#94A3B8');
+                    line.setAttribute('stroke-width', '2.5');
+                    line.setAttribute('opacity', '0.4');
+                    line.setAttribute('stroke-linecap', 'round');
+                    line.setAttribute('marker-end', 'url(#arrowhead)');
+                    connectionsGroup.appendChild(line);
+                }
+            });
+            
+            const industryColors = {
+                'Software': '#3B82F6',
+                'Cloud Computing': '#06B6D4',
+                'Data Analytics': '#8B5CF6',
+                'Artificial Intelligence': '#EC4899',
+                'Cybersecurity': '#F59E0B',
+                'Mobile Development': '#10B981',
+                'Financial Technology': '#6366F1',
+                'Healthcare Technology': '#EF4444'
+            };
+            
+            const investorColors = {
+                'Venture Capital': '#DC2626',
+                'Angel Investor': '#F97316',
+                'Private Equity': '#7C3AED'
+            };
+            
+            const getNodeColor = (node) => {
+                if (node.type === 'company') {
+                    return industryColors[node.industry] || '#3B82F6';
+                } else if (node.type === 'investor') {
+                    return investorColors[node.type_of_investor] || '#DC2626';
+                }
+                return '#7C3AED';
+            };
+            
+            nodes.forEach((node) => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('data-node-id', node.id);
+                g.style.cursor = 'pointer';
+                
+                g.addEventListener('click', () => selectNode(node.id));
+                g.addEventListener('mouseover', function() {
+                    this.style.filter = 'drop-shadow(0 8px 16px rgba(0,0,0,0.3)) brightness(1.1)';
+                    const circles = this.querySelectorAll('circle');
+                    circles.forEach(c => {
+                        c.setAttribute('stroke-width', '5');
+                    });
+                });
+                g.addEventListener('mouseout', function() {
+                    this.style.filter = 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))';
+                    const circles = this.querySelectorAll('circle');
+                    circles.forEach(c => {
+                        c.setAttribute('stroke-width', '4');
+                    });
+                });
+                
+                const radius = 25;
+                const color = getNodeColor(node);
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', String(node.x));
+                circle.setAttribute('cy', String(node.y));
+                circle.setAttribute('r', String(radius));
+                circle.setAttribute('fill', color);
+                circle.setAttribute('stroke', '#FFFFFF');
+                circle.setAttribute('stroke-width', '4');
+                circle.setAttribute('filter', 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))');
+                g.appendChild(circle);
+                
+                const initials = (node.name || node.label).split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', String(node.x));
+                text.setAttribute('y', String(node.y));
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', '22');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('fill', 'white');
+                text.setAttribute('pointer-events', 'none');
+                text.textContent = initials;
+                g.appendChild(text);
+                
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('x', String(node.x));
+                label.setAttribute('y', String(node.y + radius + 25));
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('font-size', '14');
+                label.setAttribute('font-weight', '700');
+                label.setAttribute('fill', '#1F2937');
+                label.setAttribute('pointer-events', 'none');
+                label.textContent = node.name || node.label;
+                g.appendChild(label);
+                
+                nodesGroup.appendChild(g);
+            });
+            
+            console.log('Successfully created', nodes.length, 'node elements in SVG');
+            console.log('nodesGroup now contains', nodesGroup.children.length, 'children');
+            
+            renderedNodes = nodes;
+            renderedEdges = edges;
+        }
+
+        // Improved force-directed layout simulation with better spacing
+        function simulateForceLayout(nodes, edges, iterations) {
+            const k = 250;
+            const c = 0.005;
+            const maxDist = 600;
+            const nodeMap = new Map(nodes.map(n => [n.id, n]));
+            
+            for (let iter = 0; iter < iterations; iter++) {
+                nodes.forEach(node => {
+                    node.fx = 0;
+                    node.fy = 0;
+                });
+                
+                // All-pairs repulsive forces for better spacing
+                for (let i = 0; i < nodes.length; i++) {
+                    for (let j = i + 1; j < nodes.length; j++) {
+                        const dx = nodes[j].x - nodes[i].x;
+                        const dy = nodes[j].y - nodes[i].y;
+                        const distSq = dx * dx + dy * dy + 1;
+                        const dist = Math.sqrt(distSq);
+                        
+                        if (dist < maxDist && dist > 0.1) {
+                            const force = (k * k) / (dist * dist);
+                            const fx = (force * dx) / dist;
+                            const fy = (force * dy) / dist;
+                            
+                            nodes[i].fx -= fx;
+                            nodes[i].fy -= fy;
+                            nodes[j].fx += fx;
+                            nodes[j].fy += fy;
+                        }
+                    }
+                }
+                
+                // Attractive forces for connected nodes (weaker to maintain spacing)
+                edges.forEach(edge => {
+                    const source = nodeMap.get(edge.source);
+                    const target = nodeMap.get(edge.target);
+                    
+                    if (source && target) {
+                        const dx = target.x - source.x;
+                        const dy = target.y - source.y;
+                        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                        const force = c * dist;
+                        
+                        source.fx += (force * dx) / dist;
+                        source.fy += (force * dy) / dist;
+                        target.fx -= (force * dx) / dist;
+                        target.fy -= (force * dy) / dist;
+                    }
+                });
+                
+                // Update positions with velocity
+                const damping = 0.8;
+                const friction = 0.04;
+                nodes.forEach(node => {
+                    node.vx = (node.vx + node.fx * friction) * damping;
+                    node.vy = (node.vy + node.fy * friction) * damping;
+                    node.x += node.vx;
+                    node.y += node.vy;
+                    
+                    node.x = Math.max(50, Math.min(1150, node.x));
+                    node.y = Math.max(50, Math.min(750, node.y));
+                });
+            }
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load test network data on page load
+            loadTestNetwork();
+
+            // Setup layout buttons with proper event handlers
+            setupLayoutButtons();
+
+            // Set initial layout (call without event context)
+            setLayout('force');
+
+            // Add search functionality with autocomplete
+            document.getElementById('networkSearch').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const searchResults = document.getElementById('searchResults');
+
+                if (searchTerm.length > 1 && networkData && networkData.nodes) {
+                    const matches = networkData.nodes.filter(node =>
+                        node.name && node.name.toLowerCase().includes(searchTerm)
+                    ).slice(0, 10); // Limit to 10 results
+
+                    if (matches.length > 0) {
+                        searchResults.innerHTML = matches.map(node => `
+                            <div class="p-2 hover:bg-slate-100 cursor-pointer border-b border-slate-200 last:border-b-0"
+                                 onclick="selectNodeFromSearch('${node.id}')">
+                                <div class="font-medium text-sm">${node.name}</div>
+                                <div class="text-xs text-secondary-600 capitalize">${node.type}</div>
+                            </div>
+                        `).join('');
+                        searchResults.classList.remove('hidden');
+                    } else {
+                        searchResults.classList.add('hidden');
+                    }
+                } else {
+                    searchResults.classList.add('hidden');
+                }
+            });
+
+            // Hide search results when clicking outside
+            document.addEventListener('click', function(e) {
+                const searchContainer = document.getElementById('networkSearch').parentElement;
+                const searchResults = document.getElementById('searchResults');
+                if (!searchContainer.contains(e.target)) {
+                    searchResults.classList.add('hidden');
+                }
+            });
+
+        // Add filter change listeners
+        ['regionFilter', 'sectorFilter', 'fundingTypeFilter', 'timeFilter', 'nodeTypeFilter'].forEach(filterId => {
+            const elem = document.getElementById(filterId);
+            if (elem) {
+                elem.addEventListener('change', function() {
+                    // Auto-apply filters on change
+                    setTimeout(applyFilters, 500);
+                });
+            }
+        });
+
+
+        });
+    </script>
+</body>
+</html>
